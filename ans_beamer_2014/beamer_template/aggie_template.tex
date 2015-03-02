@@ -1,0 +1,235 @@
+\documentclass[compress,10pt]{beamer}
+
+%Load the myriad packages
+\usepackage{amssymb,amsmath}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{spy,arrows}
+\usepackage[detect-all]{siunitx}
+%\usepackage[numbers, super]{natbib}
+\usepackage{grffile} %spaces in file names
+\usepackage{parskip}
+%\usepackage[T1]{fontenc} %for sc and bf
+%\usepackage{times}
+\usepackage{wasysym}
+\usepackage{bigstrut}
+%\usepackage{hyperref}
+\usepackage{float}
+% Load some optional sub-parts of PGF
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes.geometric}
+\usepackage{pgfplots}
+%\usepackage[no-math]{fontspec}
+%\usepackage{xltxtra}
+%\usepackage{xunicode}
+%\defaultfontfeatures{Mapping=tex-text}
+%%\setsansfont[Mapping=tex-text]{Optima}
+%\setsansfont[Mapping=tex-text]{Helvetica Neue}
+% Optional for code samples
+\usepackage{listings}
+%
+%singular
+\newcommand{\fref}[1]{Fig.~\ref{fig:#1}}
+\newcommand{\Fref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\eref}[1]{Eq.~(\ref{eq:#1})}
+\newcommand{\Eref}[1]{Equation~(\ref{eq:#1})}
+\newcommand{\tref}[1]{Table~\ref{tab:#1}}
+%plural
+\newcommand{\frefs}[2]{Figs.~\ref{fig:#1} and \ref{fig:#2}}
+\newcommand{\Frefs}[2]{Figures~\ref{fig:#1} and \ref{fig:#2}}
+\newcommand{\erefs}[2]{Eqs.~(\ref{eq:#1}) and (\ref{eq:#2})}
+\newcommand{\Erefs}[2]{Equations~(\ref{eq:#1}) and (\ref{eq:#2})}
+\newcommand{\trefs}[2]{Tables~\ref{tab:#1} and \ref{tab:#2}}
+%range
+\newcommand{\frefss}[2]{Figs.~\ref{fig:#1} - \ref{fig:#2}}
+\newcommand{\Frefss}[2]{Figures~\ref{fig:#1} - \ref{fig:#2}}
+\newcommand{\erefss}[2]{Eqs.~(\ref{eq:#1}) - (\ref{eq:#2})}
+\newcommand{\Erefss}[2]{Equations~(\ref{eq:#1}) - (\ref{eq:#2})}
+\newcommand{\trefss}[2]{Tables~\ref{tab:#1} - \ref{tab:#2}}
+%misc.
+%Note: tarticle has ``several'' changes from article
+%in this vein.
+% some simplifying commands
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\hisparcbox}[1]{%
+    \path[hisparc,#1]
+        (-.4, .7) .. controls (0, .75) ..  (.4, .7) --
+        (.35, -1.7) ..  controls(0, -1.72) ..  (-.35, -1.7) -- cycle;
+}
+% derivative - d
+\newcommand{\ud}{\,\mathrm{d}}
+
+%Get rid of navigation icons
+\setbeamertemplate{navigation symbols}{}
+\useoutertheme{infolines}
+
+
+%Aggie-themed
+\pgfdeclareimage[height=0.1in]{TAMUlogo}{tamu_engineering.png}
+\logo{\raisebox{-8pt}{\pgfuseimage{TAMUlogo}}}
+\titlegraphic{\includegraphics[height=0.18\textheight]{tamu_seal.png}}
+%Michigan-themed
+%\pgfdeclareimage[height=0.1in]{UMlogo}{michigan_engineering.png}
+%\logo{\raisebox{-8pt}{\pgfuseimage{UMlogo}}}
+%\titlegraphic{\includegraphics[height=0.2\textheight]{michigan_block_m.png}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Optional packages, used to show off certain tricks
+
+\newlength \figwidth
+\setlength \figwidth {0.5\textwidth}
+
+\setlength{\leftmargin}{-2cm}
+\setlength{\rightmargin}{-2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mode<presentation>
+{
+\usepackage[english]{babel}
+\usetheme{Frankfurt}
+
+%Make it Aggie Maroon
+\usecolortheme[RGB={80,0,0}]{structure}  
+%Or Michigan Blue
+%\usecolortheme[RGB={0,0,153}]{structure}  
+%Or Michigan Maize
+%\usecolortheme[RGB={255,204,0}]{structure}  
+
+  % This will typeset only the frames (or slides) that have the given label ("current" in this case).
+%  \includeonlyframes{current}
+}
+
+\title{Final Project Results}
+\subtitle{Acceleration of non-LTE calculations via parallel cyclic reduction}
+
+\author[Holladay]{\large Daniel~A.~Holladay}
+
+%TAMU
+\institute[TAMU]{Department of Nuclear Engineering\\
+Texas A\&M University \\
+College Station, TX 77843-3133\\[1ex]
+\href{mailto:dholladay00@tamu.edu}{dholladay00@tamu.edu}}
+
+%U of M
+%\institute[Michigan]{Department of Nuclear Engineering and Radiological Sciences\\
+%University of Michigan \\
+%Ann Arbor, MI 48109 \\[1ex]
+%\href{mailto:andthoti@umich.edu}{andthoti@umich.edu}}
+
+\date{\today}
+
+% You can override the default acknowledgment, and address if you want
+%\acknowledgement{*Submitted in partial fulfillment of the requirements of NUEN 610 \\
+%(Nuclear Reactor Design)}
+%\address{Nuclear Engineering Department \\
+%            Texas A\&M University \\
+%            College Station, TX 77843-3133}}
+
+% If you don't want the menu section outline above the title, do this:
+%\setbeamertemplate{headline}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  All this typeout stuff simply gets printed to the screen as the document
+% is compiled.  It helps get stuff working
+\typeout{***********************************************************************************}
+\typeout{titlepage}
+
+\begin{frame}[label=title,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Parallel algorithm}
+
+\begin{center}
+\begin{tikzpicture}
+    [ x=.5mm, y=.5mm,
+      font={\sffamily},
+      station/.style={fill=gray},
+      hut/.style={fill=lightgray},
+      cluster/.style={fill=yellow!30, rounded corners=2pt},
+      road/.style={fill=blue!10},
+      calorimeter/.style={fill=green!30},
+      tracker/.style={fill=red!30},
+      hisparc/.style={fill=red, rounded corners=.15pt},
+      hisparcgps/.style={fill=red},
+      axis/.style={gray,very thick,->,>=stealth'},
+      ruler/.style={gray,|<->|,>=stealth'},
+      spy using outlines={red, circle, magnification=4, size=25 * 4,
+                          connect spies}
+    ]
+    % Clusters
+%    \foreach \i in {-1.5, -0.5, ..., 1.5} {
+%        \foreach \j in {-1.5, -0.5, ..., 1.5} {
+%            \path[cluster, shift={(\i * 52, \j * 52)}]
+%                (-22, -22) rectangle (22, 22);
+%        }
+%    }
+
+    % Roads
+%    \foreach \i in {-1.5, -0.5, ..., 1.5} {
+%        \path[road, shift={(0, \i * 52 + 2)}]
+%            (-105, -1.5) rectangle (105, 1.5);
+%    }
+
+    % Detector array
+    \foreach \i in {-7.5, -6.5, ..., 7.5} {
+        \foreach \j in {-7.5, -6.5, ..., 7.5} {
+            \path[station, shift={(\i * 10, \j * 10)}]
+                (-1.2, -1.2) rectangle (1.2, 1.2);
+        }
+    }
+    % Two detectors are slightly displaced
+%    \path[station, shift={(-6.5, 23.5)}] (-1.2, -1.2) rectangle (1.2, 1.2);
+%    \path[station, shift={(6.5, 23.5)}] (-1.2, -1.2) rectangle (1.2, 1.2);
+%
+%    % Electronic huts
+%    \foreach \i in {-1.5, -0.5, ..., 1.5} {
+%        \foreach \j in {-1.5, -0.5, ..., 1.5} {
+%            \path[hut, shift={(\i * 52, \j * 52 - 1.5)}]
+%                (-2.5, -1.2) rectangle (2.5, 1.2);
+%        }
+%    }
+%
+%    % Central detector
+%    \fill[white] (-13, -13) rectangle (13, 21);
+%    \path[calorimeter, shift={(0, 5)}] (-10, -8) rectangle (10, 8);
+%
+%    % Muon tracker
+%    \path[tracker, shift={(0, 4)}] (-2.7, 32.5) rectangle (2.7, 70.5);
+%
+%    % HiSPARC station
+%    \hisparcbox{shift={(65.0, 15.05)}, rotate=180}
+%    \hisparcbox{shift={(65.0, 20.82)}, rotate=180}
+%    \hisparcbox{shift={(70.0, 23.71)}, rotate=-90}
+%    \hisparcbox{shift={(60.0, 23.71)}, rotate=90}
+%    \path[hisparcgps, shift={(65.0, 23.71)}] (0, 0) circle (.3);
+%
+%    % Draw rulers
+%    \draw[ruler] (-97.5, -105) -- (97.5, -105)
+%        node[midway,below] {\SI{195}{\meter}};
+%    \draw[ruler] (84.5, 105) -- (97.5, 105)
+%        node[midway,above] {\SI{13}{\meter}};
+%    \draw[ruler] (-105, -97.5) -- (-105, 97.5)
+%        node[midway,above,sloped] {\SI{195}{\meter}};
+%    \draw[ruler] (105, 84.5) -- (105, 97.5)
+%        node[midway,below,sloped] {\SI{13}{\meter}};
+%
+%    % Spy
+%    \spy on (65.0, 20.82) in node at (30, -50);
+
+\end{tikzpicture}
+\end{center}
+
+\end{frame}
+
+\end{document}
