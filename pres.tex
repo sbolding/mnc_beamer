@@ -1,22 +1,23 @@
-\documentclass[xcolor=dvipsnames,handout]{beamer}
+\documentclass[xcolor=dvipsnames,handout,unknownkeysallowed]{beamer}
 \usepackage{tabls}
 \usepackage{graphicx}
 %\usepackage{animate}
-\usepackage{xcolor}
 
-%tikz stuff
+
+%Load the myriad packages
+\usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=2cm, text
-    width=1.5cm, minimum height=1cm,text centered, text=white,draw=black, fill=Gray!140]
+    width=1.8cm, minimum height=1cm,text centered, text=white,draw=black, fill=Gray!140]
 \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110,
 minimum width=0.5cm, minimum height=1cm, text centered, draw=black,
 fill=blue!20!Gray!90!,text=white]
 \tikzstyle{process} = [rectangle, minimum width=2cm, minimum height=1cm, text
 centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
-\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text
-centered, draw=black, fill=Gray!,text=white]
-\tikzstyle{arrow} = [thick,line width=0.6mm,->,>=stealth]
+\tikzstyle{decision} = [diamond, minimum width=2.0cm, minimum
+    height=0.81cm,aspect=1.40, text centered, draw=black, fill=Gray!,text=white]
+\tikzstyle{arrow} = [thick,line width=0.5mm,->,>=stealth]
 \tikzstyle{arrow1} = [dashed,->,>=stealth]
 
 
@@ -122,9 +123,9 @@ centered, draw=black, fill=Gray!,text=white]
   % This will typeset only the frames (or slides) that have the given label ("current" in this case).
 
 \title{A High-Order Low-Order Algorithm with Exponentially-Convergent Monte Carlo for
-    $k$-Eigenvalue Problems}
+    Thermal Radiative Transfer}
 \author{{\large Simon Bolding and Jim Morel}}
-\date{11 November 2014 \\ \vspace{0.05in} {ANS Winter Meeting}}
+\date{11 November 2014 \\ \vspace{0.05in} {SIAM CSE 2015}}
 \subject{}
 %\institute{Los Alamos National Laboratory}
 
@@ -161,28 +162,68 @@ subsectionstyle=hide
 \end{frame}
 
 
-\section{Overview}
+\section{Introduction}
 
+\begin{frame}
+\frametitle{Overview}
+High temperature heat transfer is an interaction between matter and a radiation field. The radiation field heats the material and moves energy through photon streaming and scatter. The material conducts energy and emits radiation proportional to $T^4$.
+Coupled radiation and material heat conduction is important in:
+\begin{itemize}
+\item NIF shots
+\item Glass cooling 
+\item Astrophysics
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The thermal radiative transfer equations}
+\begin{itemize}
+\item 1D, frequency-integrated (grey) equations
+\begin{align}\label{ho_cont}
+    \frac{1}{c}\pderiv{I}{t} + \mu \pderiv{I}{x} + \sigma_t I
+&= \frac{\sigma_s}{2} \phi +\frac{1}{2} \sigma_a a c T^4
+  \\
+  C_v \pderiv{T}{t} &=  \sigma_a \phi - \sigma_a a c T^4. \\
+   \phi(x) &= \int_{-1}^1 I(x,\mu) \d \mu
+\end{align}
+        \item Cross sections ($\sigma$) can be a strong function of $T$
+        \item Tightly coupled and contain non-linear Planckian emission source $\sigma_a a c T^4$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The implicit Monte Carlo method}
+\begin{itemize}
+\item These equations are typically solved with MC via the Implicit Monte Carlo (IMC) method
+\item In IMC, the material energy equation is linearized over a time step and eliminated from the system
+\item Results in an effective source and scattering cross section for a linear transport problem
+\item Drawbacks 
+\begin{itemize}
+\item Effective scattering cross section can be very large
+\item System is not truly implicit, because of linearization
+\end{itemize}
+\end{itemize}
+\end{frame}
 
 \begin{frame}
     \frametitle{A High-Order Low-Order Solution}
         \begin{itemize}
             \item[]<1-> \begin{block}{Basic Idea} Build a low-order (LO) system that can be efficiently solved,
-                with high-order (HO) correction from pure absorber MC simulations \end{block}
-                \vspace{-0.1in}
-              \item Useful when global solution of particle density needed, with low
-                  statistical noise
+                with high-order (HO) correction from simpler MC simulations \end{block}
+                \vspace{-0.321in}
+              \item Useful when global solution of particle density needed
               \item<1-> The LO solution
                   preserves the HO solution, upon 
-                  convergence (consistent)
-              \item<2-> The LO solver handles non-linearities and inscattering source
+                  convergence (giving consistency)
+              \item<2-> The LO solver resolves non-linear temperature dependence
                 \begin{itemize}
-                    \item<2-> Produces a linear-discontinuous (LD) representation of sources
-                    \item<2-> Lower \colb{dimensional} problem
+                    \item<2-> Produces a linear-discontinuous (LD) finite element  representation of sources
+                    \item<2-> \colb{Lower dimensional} problem in anglular variable
                   %  \item Consistency terms derived directly from transport equation
                 \end{itemize}
-
-            \item<3-> The HO system is a fixed-source transport problem
+            \item<3-> The HO system is a fixed-source, pure-absorber transport problem
                 \begin{itemize}
                     \item<3-> ECMC allows for the statistical noise to be reduced
                         globally, giving accurate consistency terms
@@ -190,56 +231,36 @@ subsectionstyle=hide
         \end{itemize}
 \end{frame}
 
-
 \begin{frame}
-    \frametitle{The Thermal Radiative Transfer Equations}
-    \begin{itemize}
-        \item 1D, gray, isotropic scattering, backward Euler 
-        \item $\sigma$ can be a function of $T$
-        \item \colb{Transport} equation
-    \begin{equation*}
-\mu \pderiv{I^{n+1}}{x} + \left(\sigma_t + \frac{1}{c \Delta t }\right) I^{n+1}
-= \frac{\sigma_s}{2} \phi^{n+1} +\frac{1}{2} \left(\sigma_a a c T^4
-\right)^{n+1} + \frac{I^n}{\Delta_t c}  
-    \end{equation*}
-    \pause
-    \vspace{-0.2in}
-\item \colb{Material energy} equation
-        \begin{equation*}
-\rho c_v \frac{T^{n+1} - T^n}{\Delta t} = \int_{-1}^{1} \sigma_a I^{n+1}(x,\mu)
-\d\mu - \left(\sigma_a a c T^4\right)^{n+1} 
-    \end{equation*}
-\begin{equation*}
-    \phi(x) = \int_{-1}^1 I^{n+1}(x,\mu) \d\mu
-\end{equation*}
-\end{itemize}
+    \frametitle{High-Order Low-Order Algorithm}
+    %\fontsize{9}{5.0}\selectfont
+        \resizebox{0.99\linewidth}{!}{
+    \fontsize{10}{12.0}\selectfont
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop] {Initialize LO system using $\tilde{I}^n$};
+        \node (in1) [process, right of=start, xshift=2cm, text width=3.3cm]  {
+        {LO Newton solve, fully converged}};%{LO solve:\vspace{0.041in}        $\B D(\mu^{HO})\Phi = \frac{1}{\keff}\B F\Phi$};
+        \node (pro1) [io, below of=in1] {$T_{LO}^{n+1}(x)$, $\phi_{LO}^{n+1}(x)$};
+        \node (dec1) [decision, below of=pro1, yshift=-0.5cm, text width=1.74cm] {Outers Complete?};
+        \node (pro2a) [process, left of=dec1, xshift=-2.0cm] {Move to the next time step};
+        \node (srcs) [process, right of=dec1, xshift=3.0cm, text width=2.8cm] {
+        {Construct LD emission source}};
+        \node (pro2b) [process, above of=srcs, yshift=0.5cm] {{HO solve
+        for $\tilde I^{n+1}(x,\mu)$}};
+        \node (cons) [process, above of=pro2b, text width=3.0cm] {{Compute consistency
+        terms}};
+        \draw [arrow1] (start) -- (in1);
+        \draw [arrow] (in1) -- (pro1);
+        \draw [arrow] (pro1) -- (dec1);
+        \draw [arrow] (srcs) -- (pro2b);
+        \draw [arrow] (dec1.east) -- node[anchor=south] {no} (srcs);
+        \draw [arrow1] (dec1.west) -- node[anchor=south] {yes} (pro2a);
+        \draw [arrow1] (pro2a) -- (start);
+        \draw [arrow] (pro2b) -- (cons);
+        \draw [arrow] (cons) -- (in1);
+    \end{tikzpicture}
+}
 \end{frame}
-
-\begin{frame}
-    \frametitle{Eigenvalue Problem}
-    \begin{itemize}
-        \item 1D transport equation
-    \begin{equation*}
-    \mu \pderiv{\psi}{x} + \Sigma_t \psi(x,\mu)
-    = \frac{1}{4\pi}\left(\Sigma_s  + \frac{\nu \Sigma_f}{\keff} 
-    \right) \phi(x)
-    \end{equation*}
-    \pause
-    \vspace{-0.2in}
-\begin{equation*}
-    \phi(x) = 2 \pi \int_{-1}^1 \psi(x,\mu) \d\mu
-\end{equation*}
-    \item MC solutions typically use power iteration
-        \begin{itemize}
-            \item Accelerate source convergence with LO solution (e.g., CMFD)
-        \end{itemize}
-        \begin{block}{} We will use a low-order solution that handles the scattering
-        and fission operators to determine $\keff$ and $\phi(x)$. The LO solution preserves MC transport solution\end{block}
-\end{itemize}
-\end{frame}
-
-
-
 
 
 
@@ -432,30 +453,7 @@ subsectionstyle=hide
 
 \section{High-Order Low-Order Algorithm}
 
-\begin{frame}
-    \frametitle{High-Order Low-Order Algorithm}
-    %\fontsize{9}{5.0}\selectfont
-    \begin{tikzpicture}[node distance=2cm]
-        \node (start) [startstop] {Initialize LO system to S$_2$};
-        \node (in1) [process, right of=start, xshift=2cm] {Solve LO system};
-        \node (pro1) [io, below of=in1] {\keff, $\phi_{LD}(x)$};
-        \node (dec1) [decision, below of=pro1, yshift=-0.5cm] {Converged?};
-        \node (pro2a) [startstop, left of=dec1, xshift=-2.0cm] {Exit};
-        \node (pro2b) [process, right of=dec1, xshift=2cm] {HO solve};
-        \node (out1) [io, above of =pro2b, yshift=0.5cm] {$\tilde{\psi}(x,\mu)$};
-        \node (cons) [process, above of=out1] {Compute Consistency Terms};
-        
 
-        \draw [arrow1] (start) -- (in1);
-        \draw [arrow] (in1) -- (pro1);
-        \draw [arrow] (pro1) -- (dec1);
-        \draw [arrow] (dec1) -- node[anchor=south] {no} (pro2b);
-        \draw [arrow1] (dec1.west) -- node[anchor=south] {yes} (pro2a);
-        \draw [arrow] (pro2b) -- (out1);
-        \draw [arrow] (cons) -- (in1);
-        \draw [arrow] (out1) -- (cons);
-    \end{tikzpicture}
-\end{frame}
 
 \section{Results}
 \begin{frame}
