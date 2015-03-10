@@ -1,8 +1,7 @@
-\beamer@endinputifotherversion {3.31pt}
+\beamer@endinputifotherversion {3.24pt}
 \select@language {english}
 \beamer@sectionintoc {1}{Introduction}{3}{0}{1}
-\beamer@sectionintoc {2}{Low-Order Solver}{8}{0}{2}
+\beamer@sectionintoc {2}{Low-Order Solver}{9}{0}{2}
 \beamer@sectionintoc {3}{High-Order Solver}{12}{0}{3}
-\beamer@sectionintoc {4}{High-Order Low-Order Algorithm}{15}{0}{4}
-\beamer@sectionintoc {5}{Results}{15}{0}{5}
-\beamer@sectionintoc {6}{Conclusions}{18}{0}{6}
+\beamer@sectionintoc {4}{Results}{14}{0}{4}
+\beamer@sectionintoc {5}{Conclusions}{17}{0}{5}
