@@ -1,8 +1,11 @@
-\documentclass[xcolor=dvipsnames,handout]{beamer}
+\pdfminorversion=4
+\documentclass[xcolor=dvipsnames,handout,hyperref={pdfpagelabels=false}]{beamer}
 \usepackage{tabls}
 \usepackage{graphicx}
 \usepackage{subcaption}
 %\usepackage{animate}
+
+
 
 
 %Load the myriad packages
@@ -67,13 +70,15 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 \newcommand{\il}{{i-1/2}}
 \newcommand{\ir}{{i+1/2}}
 
+%The next lines automatically add outline slides at start of each section
 \AtBeginSection[]
 {
-    \begin{frame}<beamer>
+    \begin{frame}<*>
         \frametitle{Outline}
-        \tableofcontents[currentsection]
+        \tableofcontents[currentsection,currentsubsection]
     \end{frame}
 }
+
 
 \setbeamerfont{frametitle}{size=\large}
 \setbeamerfont{normal font}{size=\tiny}
@@ -84,9 +89,18 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 \usepackage{comment}
 \usepackage[]{datetime}
 \usepackage{multirow}
-
 \newcommand{\thedate}{\today}
 
+
+%\addtobeamertemplate{navigation symbols}{}{ %
+%    \usebeamerfont{footline}%
+%    \usebeamercolor[fg]{footline}%
+%    \insertframenumber/\inserttotalframenumber
+%}
+
+    \expandafter\def\expandafter\insertlogo\expandafter{%
+        \insertlogo\hspace{4pt}%
+        \raisebox{-6.9pt}{\scriptsize{\insertframenumber\,/\,\inserttotalframenumber}}}
 
 \setlength{\tabcolsep}{1.05cm}
 
@@ -166,7 +180,6 @@ subsectionstyle=hide
 
 \section{Introduction}
 \subsection{}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -340,17 +353,35 @@ are important in:
     \frametitle{LO Discretization \& Space-Angle Moments}
     \begin{itemize}
         \item Backward Euler discretization in time
-        \item Linear discontinuous (LD) FE in space for $\phi$ and $T$, and half-range
-            averages in angle
-    \end{itemize}
+        \item Linear discontinuous (LD) FE in space for $\phi$ and $T$    \end{itemize}
     \begin{centering}
-    \begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.9\textwidth]{LD.pdf}};
-    \node at (2.109,2.50853) {\scriptsize ${^+}$};
-\end{tikzpicture}
+        \begin{tikzpicture}[scale=0.58, every node/.style={transform shape}]
+            \draw (1.0,4.0) node[fill,circle,inner sep=0pt,minimum
+            size=4.2pt] {};
+            \filldraw[color=black, fill=white] (1,2.1250) circle (2.1pt);
+            \draw [->] (1.6,4.25) -- (2.4,4.25) node[anchor=west] {$\mu$};
+            \draw (1.0,0.4) -- (1.0,0.6) node[below, pos=0.4] {$x_{i-1/2}$};
+            \draw (5.90,0.4) -- (5.90,0.6) node[below, pos=0.4] {$x_{i+1/2}$};
+            \node at (4.6,3.70) {$\phi^+(x)$};
+            \draw [thick] (1.0,0.5) -- (5.9,0.5) node[anchor=north west] {};
+            \draw (1.0,2.125) -- (5.90,3.70);
+            \draw [dashed] (5.90,0.5) -- (5.90,4);
+            \draw [dashed] (1.0,0.5) -- (1.0,4);
+
+            \draw (10.8,4.0) -- (11.2,4.0) node[anchor=east]{$1$ \hspace{0.4em} };
+            \draw (11.0,0.4) -- (11.0,0.6) node[below, pos=0.4] {$x_{i-1/2}$};
+            \draw (15.90,0.4) -- (15.90,0.6) node[below, pos=0.4] {$x_{i+1/2}$};
+            \node at (14.8,4.0) {$b_{R,i}(x)$};
+            \node at (12.0,4.0) {$b_{L,i}(x)$};
+            \draw [thick,->] (9.5,0.5) -- (17.0,0.5) node[anchor=north west] {$x$};
+            \draw [dashed,-] (15.90,0.5) -- (15.90,4);
+            \draw [dashed,->] (11.0,0.5) -- (11.0,4.5);
+            \draw (11.0,0.5) -- (15.90,4.0);
+            \draw (15.90,0.5) -- (11.0,4.0);
+        \end{tikzpicture}
     \end{centering}
     \begin{itemize}
-    \pause
+        \item Half-range integrals in angle
 \item \emph{Examples} of moments:
     \end{itemize}
     \begin{center}
@@ -368,9 +399,9 @@ are important in:
 \begin{frame}
     \frametitle{Forming the LO System}
     \begin{itemize}
+    \item Backward Euler discretization in time
     \item We take spatial and angular moments of the equations to reduce
         dimensionality.
-    \item Use a backward Euler discretization in time
     \item Taking moments of T.E. yields 4 radiation equations, and 2 material energy
         equations, per cell
 
@@ -392,17 +423,16 @@ are important in:
 \begin{frame}
     \frametitle{Computing LO Consistency terms from HO Solution}
     \begin{itemize}
-        \item The streaming operator $D$ containts unknown weighted angular averages,
-            called consistency terms
+        \item The streaming operator contains generally unknown weighted angular averages,
+            called \colb{consistency terms}
         \item For $\mu>0$, $L$ moment
     \begin{equation}
 \mom{{\mu}}_{L,i}^{+} \simeq \frac{\displaystyle 
-\frac{2}{h_i} \int\limits_0^1 \int\limits_\xl^\xr \mu \, b_{L,i}(x) \tilde \psi^{HO}(x,\mu) \d \mu \d x } 
+\frac{2}{h_i} \int\limits_0^1 \int\limits_\xl^\xr \mu \, b_{L,i}(x) \tilde I^{HO}(x,\mu) \d \mu \d x } 
 {\displaystyle \frac{2}{h_i} \int\limits_0^1 \int\limits_\xl^\xr \, b_{L,i}(x)
-\tilde \psi^{HO}(x,\mu) \d \mu \d x } 
+\tilde I^{HO}(x,\mu) \d \mu \d x } 
     \end{equation}
-        \item ECMC gives LDFE $\tilde  \psi^{HO}(x,\mu)$ for computing terms directly
-        \item To get S$_2$, set $\mom{\mu}^\pm = \pm \frac{1}{\sqrt{3}}$ 
+        \item ECMC gives LDFE $\tilde  I^{HO}(x,\mu)$ for computing terms directly
     \end{itemize}
 \end{frame}
 
@@ -412,54 +442,6 @@ are important in:
 \subsection{}
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-    \frametitle{Space-Angle Mesh and MC Implementation Details}
-    \noindent
-    \begin{minipage}[t]{0.36\linewidth}
-        \centering
-        \scalebox{0.8}{
-        \begin{tikzpicture}
-            \draw (1,1) rectangle (4,4);
-            \node[draw,circle,inner sep=1.2 pt,fill] at (2.5,2.5) {};
-            \node[above] at (2.5,2.5) {$(x_i,\mu_j)$};
-            \draw (1.0,0.4) -- (1.0,0.6) node[below, pos=0.4] {$x_{i-1/2}$};
-            \draw (4.0,0.4) -- (4.0,0.6) node[below, pos=0.4] {$x_{i+1/2}$};
-            \draw (0.4,1.0) -- (0.6,1.0) node[left, pos=0.4] {$\mu_{j-1/2}$};
-            \draw (0.4,4.0) -- (0.6,4.0) node[left, pos=0.4] {$\mu_{j+1/2}$};
-            \draw [thick,->] (0.5,0.5) -- (5,0.5) node[anchor=north west] {$x$};
-            \draw [thick,->] (0.5,0.5) -- (0.5,5) node[anchor=east] {$\mu$};
-        \end{tikzpicture}
-    }
-    \end{minipage}%
-    \begin{minipage}[t]{0.70\linewidth}
-        \vspace{-1.6in}
-        \begin{itemize}
-            \item {\small $\displaystyle \tilde I(x,\mu) = I_{a,i} + I_{x,i}
-                \frac{2}{h_{x}}(x-x_i) + I_{\mu,i}
-            \frac{2}{h_{\mu}}(\mu-\mu_i)$}
-        \item \colb{Path-length} estimators of moments, e.g.
-            {\small
-            \begin{align*}
-                I^{n+1}_{x,i} &= \frac{6}{h_{x}^2h_\mu}
-             \iint\limits_\mathcal{D} (x_{c,j}-x_i) I^{n+1}(x,mu) \d x \d \mu 
-        \end{align*}}    
-        \end{itemize}
-    \end{minipage}
-    \begin{itemize}
-        \item Discrete in time, resulting in fixed-source problem
-        \item Particles are allowed to stream, $w(s)=w_0 e^{-\Sigma_t s}$
-        \item LDFE and upwinding \colb{eliminates} surface tallies
-    \item Cell-wise, global representation allows for \colb{stratified} sampling
-        \begin{itemize}
-            \item $N_{i,j} \propto{|r_i(x,\mu)|}$
-            \item Force $N_i \geq N_{\min}$ and adjust particle weights
-        \end{itemize}
-
-    \end{itemize}
-
-\end{frame}
 
 
 
@@ -481,7 +463,6 @@ are important in:
         \item Residual Equation: $\displaystyle \B L \tilde 
             \epsilon^{(m)} =
             \tilde r^{(m)} = q - \B L \tilde I^{n+1,(m)}$
-            \vspace{0.01in}
         \item Compute $\tilde{\epsilon}^{(m)} = \B L^{-1} \tilde{r}^{(m)}$ with MC,
             \colb{projecting} the solution  
         \item Update: $\tilde I^{n+1,(m)} = \tilde I^{n+1,(m-1)} + \tilde \epsilon^{(m)}$
@@ -494,7 +475,24 @@ are important in:
     \item Repeat for fixed number of batches
     \end{itemize}
 \end{block}
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{Other MC Implementation Details}
+    \begin{itemize}
+        \item The LO solver provides the scattering and emission source, producing a
+            pure absorber, fixed-source transport problem.
+        \item Discrete in time, resulting in a modified source and removal cross
+            section
+        \item Particles are allowed to stream, $w(s)=w_0 e^{-\Sigma_t s}$
+        \item LDFE and upwinding \colb{eliminates} surface tallies
+    \item Cell-wise, global representation allows for \colb{stratified} sampling
+        \begin{itemize}
+            \item $N_{i,j} \propto{|r_i(x,\mu)|}$
+            \item Force $N_i \geq N_{\min}$ and adjust particle weights
+        \end{itemize}
+    \end{itemize}
 \end{frame}
 
 
@@ -540,8 +538,10 @@ are important in:
     \frametitle{Comparison of statistical noise for standard and ECMC HO solvers}
     \begin{block}{}
     \begin{itemize}
-        \item Comparse statistical accuracy of HO solvers
-        \item One HO solve, with a \emph{fixed number of histories} per time step. Comparison of
+        \item Two material problem
+        \item One HO solve, with a \emph{fixed number of histories} per time step,
+            for two different HO solvers: a
+            comparison of
             \colr{ECMC} with 3 batches and standard MC (\colb{SMC}), as well as S$_2$
             solution
     \end{itemize}
@@ -582,6 +582,8 @@ are important in:
 \end{frame}
 
 \appendix
+\newcounter{finalframe}
+\setcounter{finalframe}{\value{framenumber}}
 
 \title{Backup Slides}
 \author{}
@@ -687,4 +689,5 @@ are important in:
  \end{block}
 \end{frame}
 
+\setcounter{framenumber}{\value{finalframe}}
 \end{document}
