@@ -254,9 +254,8 @@ subsectionstyle=hide
             \item[]<1-> \begin{block}{Basic Idea} Build a low-order (LO) system that can be efficiently solved,
                 with high-order (HO) correction from simpler MC simulations \end{block}
                 \vspace{-0.321in}
-              \item Form a fixed spatial finite element mesh
-              \item<1-> The LO solution preserves moments of the HO solution upon
-                  convergence
+              \item<1-> The LO system, formed over a fixed spatial finite element
+                  (FE) mesh, contains \colb{angular consistency terms}.
               \item<2-> The LO solver resolves non-linear temperature dependence with
                   Newtons method
                 \begin{itemize}
@@ -264,10 +263,11 @@ subsectionstyle=hide
                     \item<2-> Produces a linear-discontinuous (LD) finite element  representation of sources
                   %  \item Consistency terms derived directly from transport equation
                 \end{itemize}
-            \item<3-> The HO system is a fixed-source, pure-absorber transport
-                problem, which we solve with ECMC
+                \vspace{-0.1in}
+            \item<3-> The HO system is a fixed-source, pure-absorber transport problem
                 \begin{itemize}
                     \item No effective scattering events
+                    \item Solved with ECMC for efficient reduction of statisical noise 
                 \end{itemize}
         \end{itemize}
     }
@@ -318,7 +318,7 @@ subsectionstyle=hide
     \frametitle{LO Discretization \& Space-Angle Moments}
     \begin{itemize}
         \item Backward Euler discretization in time
-        \item Linear discontinuous (LD) FE in space for $\phi$ and $T$    \end{itemize}
+        \item Linear discontinuous (LD) FE in space for $\phi$, $T$, and $T^4$   \end{itemize}
     \begin{centering}
         \begin{tikzpicture}[scale=0.58, every node/.style={transform shape}]
             \draw (1.0,4.0) node[fill,circle,inner sep=0pt,minimum
@@ -365,7 +365,7 @@ subsectionstyle=hide
     \frametitle{Forming the LO System}
     \begin{itemize}
     \item Backward Euler discretization in time
-    \item We take spatial and angular moments of the equations to reduce
+    \item We take half range angular integralsspatial and angular moments of the equations to reduce
         dimensionality.
     \item Taking moments of T.E. yields 4 radiation equations, and 2 material energy
         equations, per cell
@@ -375,11 +375,6 @@ subsectionstyle=hide
     \item Cell unknowns: $\mom{\phi}_{L,i}^{n+1,+}$, $\mom{\phi}_{R,i}^{n+1,+}$,
         $\mom{\phi}_{L,i}^{n+1,-}$, $\mom{\phi}_{R,i}^{n+1,-}$, $T_{L,i}$, $T_{R,i}$
 
-    \item The global system for radiation, {\color{blue}fully implicit} in time, is
-        \begin{equation*}
-            \boxed{ \B  D^{n+1}\, \underline \Phi^{n+1} = \u B(T^{n+1}) + \frac{ \underline
-            \Phi^n}{c\Delta t}}
-        \end{equation*}
     \end{itemize}
 \end{frame}
 
@@ -426,8 +421,8 @@ subsectionstyle=hide
      \begin{itemize}
         \item Requires a \colr{discretized} form of the angular intensity $\tilde I(x,\mu)$
             \begin{itemize}
-                \item Use \colb{projection} of the solution onto a space-angle FE mesh
-                \item Projection computed using path-length estimators of moments of $I$
+                \item Use \colb{projection} of the solution onto a space-angle FE
+                    mesh, computed with path-length estimators of moments
     \end{itemize}
     \end{itemize}
     \end{minipage}
@@ -459,11 +454,11 @@ subsectionstyle=hide
         \begin{align*}
             \left[\mu \pderiv{}{x} + \left(\sigma_t+\frac{1}{c\Delta t}\right)\right]I^{n+1}(x,\mu)
             &= \boxed{\frac{I^{n}}{c\Delta t} + \frac{1}{2}\sigma_a a c T_{LO}^{n+1,4}} \\
-            \B L I^{n+1} &= \colb{q}
+            \B L I^{n+1} &= \colb{q_{LO}}
      \end{align*}
         \vspace{-0.3in}
         \end{itemize}
-        \begin{block}{ECMC Algorithm}
+        \begin{block}{FOR a fixed number of batches:}
          \begin{itemize}
         \item Residual Equation: $\displaystyle \B L \tilde 
             \epsilon^{(m)} =
@@ -477,7 +472,6 @@ subsectionstyle=hide
              \item Must sufficiently reduce noise in $\epsilon$ tallies, each batch
              \item Issues when solution cannot be represented within a cell
         \end{itemize}
-    \item Repeat for fixed number of batches
     \end{itemize}
 \end{block}
 \end{frame}
