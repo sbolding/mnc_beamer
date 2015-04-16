@@ -1,5 +1,5 @@
 \pdfminorversion=4
-\documentclass[xcolor=dvipsnames,handout,hyperref={pdfpagelabels=false}]{beamer}
+\documentclass[xcolor=dvipsnames,hyperref={pdfpagelabels=false},handout,unknownkeysallowed]{beamer}
 \usepackage{tabls}
 \usepackage{graphicx}
 \usepackage{subcaption}
@@ -24,7 +24,8 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 \tikzstyle{arrow} = [thick,line width=0.5mm,->,>=stealth]
 \tikzstyle{arrow1} = [dashed,->,>=stealth]
 
-
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\useoutertheme{infolines}
 
 %\definecolor{myblue}{rgb}{0.7, 0.7, 60.0}
 \definecolor{mylightblue}{rgb}{1,1,1}
@@ -98,9 +99,12 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 %    \insertframenumber/\inserttotalframenumber
 %}
 
-    \expandafter\def\expandafter\insertlogo\expandafter{%
-        \insertlogo\hspace{4pt}%
-        \raisebox{-6.9pt}{\scriptsize{\insertframenumber\,/\,\inserttotalframenumber}}}
+
+% HACKING IN page numbers
+%
+%    \expandafter\def\expandafter\insertlogo\expandafter{%
+%        \insertlogo\hspace{4pt}%
+%        \raisebox{-6.9pt}{\scriptsize{\insertframenumber\,/\,\inserttotalframenumber}}}
 
 \setlength{\tabcolsep}{1.05cm}
 
@@ -138,10 +142,11 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 
   % This will typeset only the frames (or slides) that have the given label ("current" in this case).
 
-\title{A High-Order Low-Order Algorithm with Exponentially-Convergent Monte Carlo for
+\title[HOLO for TRT]{A High-Order Low-Order Algorithm with Exponentially-Convergent Monte Carlo for
     Thermal Radiative Transfer}
-\author{{\large Simon Bolding and Jim Morel}}
-\date{11 November 2014 \\ \vspace{0.05in} {SIAM CSE 2015}}
+    \author[S.R. Bolding]{{\large Simon Bolding\inst{1}, Jim Morel\inst{1}, and Mathew Cleveland\inst{2}}}
+    \institute[]{{\large \inst{1} Texas A\&M University\\ \inst{2} Los Alamos National Laboratory}}
+\date{{MC 2015 - April 22} }
 \subject{}
 %\institute{Los Alamos National Laboratory}
 
@@ -184,59 +189,59 @@ subsectionstyle=hide
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Overview}
-Thermal radiative transfer is relevant in very high temperature heat transfer
-scenarios, representing a complicatedn interaction
-between matter and a radiation field. The radiation field heats the material and
-moves energy through photon streaming and scatter. The material conducts energy and
-emits radiation proportional to $T^4$. Time dependent, radiative transfer simulations
-are important in:
-
 \begin{itemize}
+\item We are interested in modeling thermal radiation transport in the High-Energy Density Physics regime.
+\begin{itemize}
+\item Temperatures on order of $10^6$ K or more.  
+\item Significant energy and momentum may be exchanged with material.
+\end{itemize}\pause
+\item Radiative transfer simulations important in modeling: 
+\begin{itemize}
+\item Material under extreme conditions
 \item Inertial confinement fusion
-\item High energy plasma calculations
-\item Astrophysics calculations
+\item Supernovae and other astrophysical phenomena.
+\end{itemize}
 \end{itemize}
 \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{The thermal radiative transfer equations}
+\frametitle{The gray thermal radiative transfer equations}
 \begin{itemize}
 \item The 1D, frequency-integrated (grey) equations
-\begin{align}\label{ho_cont}
+\begin{align*}\label{ho_cont}
     \frac{1}{c}\pderiv{I}{t} + \mu \pderiv{I}{x} + \sigma_t I(x,\mu)
-&= \frac{1}{2} \sigma_a a c T^4
+&= \frac{1}{2} \sigma_a a c T^4,
   \\
-  C_v \pderiv{T}{t} &=  \sigma_a \phi - \sigma_a a c T^4. \\
-   \phi(x) &= \int_{-1}^1 I(x,\mu) \d \mu
-\end{align}
+  C_v \pderiv{T}{t} &=  \sigma_a \phi(x) - \sigma_a a c T^4, \\
+   \phi(x) &= \int_{-1}^1 I(x,\mu) \d \mu.
+\end{align*}
         \item Fundamental unknowns are the radiation intensity $I(x,\mu)$ and material
             temperature $T$
-        \item Cross sections ($\sigma$) can be a strong function of $T$
-        \item Equations are tightly coupled through source terms and contain the non-linear Planckian emission source $a c T^4$
+        \item \pause Absorption cross section ($\sigma_a$) can be a strong function of $T$
+        \item Equations are nonlinear and may be tightly coupled 
 \end{itemize}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{The implicit Monte Carlo method}
+\frametitle{The Implicit Monte Carlo Method}
 \begin{itemize}
-\item These equations are typically solved with Monte Carlo (MC) via the Implicit Monte Carlo (IMC) method
-\item In IMC, the material energy equation is linearized \colb{over a time step} and eliminated from the system
+\item Equations often solved with Monte Carlo (MC) via the Implicit Monte Carlo (IMC) method
+\item In IMC, the material energy equation is linearized over a time step and eliminated from the system
     \begin{itemize}
-        \item Results in an effective source and scattering cross section for a \colb{linear} transport problem
+        \item Results in effective emission and scattering terms
 \item This linear transport equation is solved with standard MC particle transport
     algorithms
 \item Continuous integration in time
     \end{itemize}
 \item Drawbacks 
 \begin{itemize}
-\item Effective scattering cross section can be very large, resulting in many
-    expensive MC scattering events
-\item System is not truly implicit in time, because of linearization
-\item Artificial reconstruction of linear source shape in cell
+\item Effective scattering cross section can be very large 
+\item Nonlinearities not converged
+\item Reconstruction of linear source shape in cell
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -255,7 +260,7 @@ are important in:
               \item<2-> The LO solver resolves non-linear temperature dependence with
                   Newtons method
                 \begin{itemize}
-                    \item<2-> \colb{Lower dimensional} problem in anglular variable
+                    \item<2-> \colb{Lower dimensional} problem in angular variable
                     \item<2-> Produces a linear-discontinuous (LD) finite element  representation of sources
                   %  \item Consistency terms derived directly from transport equation
                 \end{itemize}
@@ -496,7 +501,7 @@ are important in:
 \end{frame}
 
 
-\section{Results}
+\section{Computational Results}
 \subsection{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -562,23 +567,22 @@ are important in:
     \begin{itemize}
         \item Can accurately reproduce IMC results with HOLO method
         \begin{itemize}
-            \item Pure absorber histories are more effecient than standard MC simulations
-            \item ECMC requires significantly less 
+            \item ECMC requires significantly less particles
             \item LO solver determines non-linear Material temperature distribution
             \item Linear shape within a cell mitigates teleportation error
             \item Very efficient for diffusive problems
         \end{itemize}
+    \item Currently developing strategies for dealing with unresolvable solutions
     \item Future work will be to implement in 2 spatial dimensions to demonstrate the
         elimination of ray effects
     \end{itemize}
 \end{frame}
 
-
-\date{11 November 2014}
-
+\date{}
 \begin{frame}
     \frametitle{{\LARGE\coly{Questions?}}}
-    \titlepage \vspace{-0.113in}
+    \vspace{-0.21in}
+    \titlepage \vspace{-0.2113in}
 \end{frame}
 
 \appendix
