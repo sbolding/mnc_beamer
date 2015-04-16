@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.28)  16 APR 2015 17:03
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.28)  16 APR 2015 17:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1112,24 +1112,24 @@ Overfull \vbox (4.81104pt too high) detected at line 274
 
 [7
 
-]
-Overfull \hbox (46.60374pt too wide) in paragraph at lines 318--318
- [][] 
- []
+] [8
 
-[8
+] (./pres.toc) [9
 
-] [9
-
-] (./pres.toc) [10
+] [10
 
 ] [11
 
 ] [12
 
-] [13
+] (./pres.toc) [13
 
-] (./pres.toc) [14
+]
+Overfull \hbox (46.60374pt too wide) in paragraph at lines 450--450
+ [][] 
+ []
+
+[14
 
 ]
 Overfull \vbox (18.69272pt too high) detected at line 483
@@ -1259,7 +1259,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 697.
 Here is how much of TeX's memory you used:
  21613 strings out of 493304
  407288 string characters out of 6139871
- 522318 words of memory out of 5000000
+ 523876 words of memory out of 5000000
  24451 multiletter control sequences out of 15000+600000
  17897 words of font info for 66 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
@@ -1279,7 +1279,7 @@ si8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/
 texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on pres.pdf (28 pages, 870164 bytes).
+Output written on pres.pdf (28 pages, 870184 bytes).
 PDF statistics:
  1031 PDF objects out of 1200 (max. 8388607)
  69 named destinations out of 1000 (max. 500000)

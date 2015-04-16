@@ -276,46 +276,6 @@ subsectionstyle=hide
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-    \frametitle{Overview of Exponentially Convergent Monte Carlo}
-    \begin{itemize}
-        \item Iterative form of residual Monte Carlo
-      \begin{itemize}
-          \item Each batch tallies the \colb{error} in current estimate of solution, which
-            is a transport problem with a reduced source
-    \item Can reduce statistical error \colb{globally} $\propto e^{-\alpha N}$
-           \item In TRT problems, old angular intensity provides a very good guess of new
-               solution, significantly reducing the required number of histories
-\end{itemize}
-     \end{itemize}
-    \begin{minipage}{0.6\linewidth}
-        \vspace{-2.0in}
-     \begin{itemize}
-        \item Requires a \colr{discretized} form of the angular intensity $\tilde I(x,\mu)$
-            \begin{itemize}
-                \item Use \colb{projection} of the solution onto a space-angle FE mesh
-                \item Projection computed using path-length estimators of moments of $I$
-    \end{itemize}
-    \end{itemize}
-    \end{minipage}
-    \begin{minipage}[t]{0.3\linewidth}
-        \centering
-        \scalebox{0.8}{
-        \begin{tikzpicture}
-            \draw (1,1) rectangle (4,4);
-            \node[draw,circle,inner sep=1.2 pt,fill] at (2.5,2.5) {};
-            \node[above] at (2.5,2.5) {$(x_i,\mu_j)$};
-            \draw (1.0,0.4) -- (1.0,0.6) node[below, pos=0.4] {$x_{i-1/2}$};
-            \draw (4.0,0.4) -- (4.0,0.6) node[below, pos=0.4] {$x_{i+1/2}$};
-            \draw (0.4,1.0) -- (0.6,1.0) node[left, pos=0.4] {$\mu_{j-1/2}$};
-            \draw (0.4,4.0) -- (0.6,4.0) node[left, pos=0.4] {$\mu_{j+1/2}$};
-            \draw [thick,->] (0.5,0.5) -- (5,0.5) node[anchor=north west] {$x$};
-            \draw [thick,->] (0.5,0.5) -- (0.5,5) node[anchor=east] {$\mu$};
-        \end{tikzpicture}
-    }
-    \end{minipage}%
-\end{frame}
 \begin{frame}
     \frametitle{High-Order Low-Order Algorithm}
     %\fontsize{9}{5.0}\selectfont
@@ -448,6 +408,46 @@ subsectionstyle=hide
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{Overview of Exponentially Convergent Monte Carlo}
+    \begin{itemize}
+        \item Iterative form of residual Monte Carlo
+      \begin{itemize}
+          \item Each batch tallies the \colb{error} in current estimate of solution, which
+            is a transport problem with a reduced source
+    \item Can reduce statistical error \colb{globally} $\propto e^{-\alpha N}$
+           \item In TRT problems, old angular intensity provides a very good guess of new
+               solution, significantly reducing the required number of histories
+\end{itemize}
+     \end{itemize}
+    \begin{minipage}{0.6\linewidth}
+        \vspace{-2.0in}
+     \begin{itemize}
+        \item Requires a \colr{discretized} form of the angular intensity $\tilde I(x,\mu)$
+            \begin{itemize}
+                \item Use \colb{projection} of the solution onto a space-angle FE mesh
+                \item Projection computed using path-length estimators of moments of $I$
+    \end{itemize}
+    \end{itemize}
+    \end{minipage}
+    \begin{minipage}[t]{0.3\linewidth}
+        \centering
+        \scalebox{0.8}{
+        \begin{tikzpicture}
+            \draw (1,1) rectangle (4,4);
+            \node[draw,circle,inner sep=1.2 pt,fill] at (2.5,2.5) {};
+            \node[above] at (2.5,2.5) {$(x_i,\mu_j)$};
+            \draw (1.0,0.4) -- (1.0,0.6) node[below, pos=0.4] {$x_{i-1/2}$};
+            \draw (4.0,0.4) -- (4.0,0.6) node[below, pos=0.4] {$x_{i+1/2}$};
+            \draw (0.4,1.0) -- (0.6,1.0) node[left, pos=0.4] {$\mu_{j-1/2}$};
+            \draw (0.4,4.0) -- (0.6,4.0) node[left, pos=0.4] {$\mu_{j+1/2}$};
+            \draw [thick,->] (0.5,0.5) -- (5,0.5) node[anchor=north west] {$x$};
+            \draw [thick,->] (0.5,0.5) -- (0.5,5) node[anchor=east] {$\mu$};
+        \end{tikzpicture}
+    }
+    \end{minipage}%
+\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
