@@ -253,10 +253,11 @@ subsectionstyle=hide
     \frametitle{An alternative  High-Order Low-Order approach}
     {\small
         \begin{itemize}
-            \item[]<1-> \begin{block}{Basic Idea} Solve a fully non-linear, low-order (LO) system,
-                that preserves a high-order (HO) solution from efficent MC simulations \end{block}
+            \item[]<1-> \begin{block}{Basic Idea} Solve a fully non-linear, low-order (LO) system
+                that preserves a high-order (HO) solution from efficent MC
+                simulations, \emph{for each time step}\end{block}
                 \vspace{-0.321in}
-              \item<1-> The LO system consists of space-angle moment equations, formed over a fixed finite-element (FE) spatial mesh
+              \item<2-> The LO system consists of space-angle moment equations, formed over a fixed finite-element (FE) spatial mesh
                 \begin{itemize}
                     \item<2-> \colb{Lower dimensionality} in angle
               \item<2-> Non-linear temperature dependence converged with Newton's method 
@@ -267,9 +268,9 @@ subsectionstyle=hide
                 \vspace{-0.1in}
             \item<3-> The HO system is a fixed-source, pure-absorber transport problem
                 \begin{itemize}
-                    \item<4-> \colb{No effective scattering} events
-                    \item<4-> Solved with ECMC for efficient reduction of statisical noise 
-                    \item<4-> \textbf{Output:} angular consistency terms
+                    \item<3-> \colb{No effective scattering} events
+                    \item<3-> Solved with ECMC for efficient reduction of statisical noise 
+                    \item<3-> \textbf{Output:} angular consistency terms
                 \end{itemize}
         \end{itemize}
     }
@@ -318,7 +319,7 @@ subsectionstyle=hide
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{LO Discretization \& Space-Angle Moments}
-    {\small
+    {\footnotesize
     \begin{itemize}
         \item The LO system is ``S$_2$-like'' equations (similar to [Wolters 2013]),
             with a backward Euler discretization in time
@@ -352,6 +353,7 @@ subsectionstyle=hide
     \begin{itemize}
             \pause
     \item \colb{Half-range integrals} over $+$ and $-$ $\mu$
+        \pause
         \item \emph{\u{Examples}} of moments:
     \end{itemize}
     \begin{center}
@@ -375,25 +377,25 @@ subsectionstyle=hide
      %\item Take the FE spatial moments of the TRT equations over spatial elements.
      %   \item Integrate resulting transport equation over $+$ and $-$ $\mu$ half ranges 
       \item Applying moments to the TRT equations yields 4 radiation equations, and 2 material energy
-        equations, per cell
+          equations, per cell \pause \vspace{-0.062in}
     \item The resulting radiation equations are  manipulated to produce weighted
         averages, which we refer to as \colb{consistency
           terms}, e.g.,
     \begin{equation*}
 \{{\mu}\}_{L,i}^{+} := \frac{\displaystyle 
     \int\limits_0^1 \int\limits_\xl^\xr \mu \, b_{L,i}(x) 
-I^{n+1}(x,\mu) \;\d \mu \d x } 
+I^{n+1}(x,\mu) \;\d x \d \mu } 
 {\displaystyle \int\limits_0^1 \int\limits_\xl^\xr \, b_{L,i}(x)
-I^{n+1}(x,\mu)\; \d \mu \d x } 
+I^{n+1}(x,\mu)\; \d x \d \mu} 
     \end{equation*}
-\item Use HO $\tilde{I}^{n+1}(x,\mu)$ and the LD spatial closure to close the system
+    \pause
+    \vspace{-0.1in}
+\item Use \colb{$\tilde{I}_{HO}^{n+1}(x,\mu)$} \& LD spatial closure to close the system
     \end{enumerate}
     \begin{itemize}
             \pause
     \item Cell unknowns: $\mom{\phi}_{L,i}^{n+1,+}$, $\mom{\phi}_{R,i}^{n+1,+}$,
         $\mom{\phi}_{L,i}^{n+1,-}$, $\mom{\phi}_{R,i}^{n+1,-}$, $T_{L,i}$, $T_{R,i}$
-
-        \pause
      \item Non-linear, fully discrete system, solved with approximate Newton's method
  \end{itemize}
 
@@ -412,8 +414,7 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
 \begin{frame}
     \frametitle{Overview of Exponentially Convergent Monte Carlo}
     \begin{itemize}
-        \item Each batch tallies the \colb{error} in current estimate of solution, which
-            is a transport problem with a reduced source
+        \item Each batch tallies the \colb{error} in current estimate of solution
             \begin{itemize}
     \item Can reduce statistical error \colb{globally} $\propto e^{-\alpha N}$
     \item In TRT problems, old angular intensity provides a \emph{very good} guess of new
@@ -422,6 +423,7 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
      \end{itemize}
     \begin{minipage}{0.6\linewidth}
         \vspace{-2.0in}
+        \pause
      \begin{itemize}
         \item Requires a \colr{discretized} form of the angular intensity $\tilde I(x,\mu)$
             \begin{itemize}
@@ -459,21 +461,24 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
             representation of $T^4$ from LO solution
         \begin{align*}
             \left[\mu \pderiv{}{x} + \left(\sigma_t+\frac{1}{c\Delta t}\right)\right]I^{n+1}(x,\mu)
-            &= \boxed{\frac{I^{n}}{c\Delta t} + \frac{1}{2}\sigma_a a c T_{LO}^{n+1,4}} \\
+            &= \frac{I^{n}}{c\Delta t} + \boxed{\frac{1}{2}\sigma_a a c T_{LO}^{n+1,4}} \\
             \B L I^{n+1} &= \colb{q_{LO}}
      \end{align*}
         \vspace{-0.3in}
+        \pause
         \end{itemize}
         \begin{block}{For each batch:}
          \begin{itemize}
         \item Residual Equation: $\displaystyle \B L \tilde 
             \epsilon^{(m)} =
             \tilde r^{(m)} = q - \B L \tilde I^{n+1,(m)}$
+            \pause
         \item Compute $\tilde{\epsilon}^{(m)} = \B L^{-1} \tilde{r}^{(m)}$ with MC 
             \begin{itemize}
                 \item Particles are allowed to stream along path $s$, $w(s)=w_0 e^{-\sigma_t s}$
-                \item Cell-wise, global representation allows for easy \colb{stratified} sampling
+                \item Use cell-wise \colb{systematic} sampling for $r^{(m)}$ source
             \end{itemize}
+            \pause
         \item Update: $\tilde I^{n+1,(m)} = \tilde I^{n+1,(m-1)} + \tilde \epsilon^{(m)}$
         \begin{itemize}
             \item If $\tilde{\epsilon}$ is reduced each batch, \colb{exponential convergence
@@ -527,7 +532,6 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
 \begin{frame}
     \frametitle{Relevant Implementation Specifics}
     \begin{itemize}
-    \item LO Newton iterations are is fully converged each solve
     \item Difficulties in resolving the solution near the wave-front
         \begin{itemize}
             \item The LD representation for $I$ results in negativite values within a
@@ -535,7 +539,13 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
             \item In these results, no correction is applied to the HO solution, and the LO
                 solution uses lumped LD and S$_2$ equivalent terms in bad cells
         \end{itemize}
-    \item For all results, one HO solve per time step
+     \pause
+ \item \u{For all results}
+        \begin{itemize}
+    \item LO Newton iterations are is fully converged each solve
+    \item Fixed $\Delta t$ of $0.001$ sh
+    \item One HO solve per time step
+    \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -607,6 +617,7 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
             \item Linear shape within a cell mitigates teleportation error
             \item Very efficient for diffusive problems
         \end{itemize}
+        \pause
     \item Currently developing strategies for dealing with unresolvable solutions
     \item Next step will be to implement in 2 spatial dimensions
     \end{itemize}
