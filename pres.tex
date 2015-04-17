@@ -1,5 +1,5 @@
 \pdfminorversion=4
-\documentclass[xcolor=dvipsnames,hyperref={pdfpagelabels=false},handout,unknownkeysallowed]{beamer}
+\documentclass[xcolor=dvipsnames,hyperref={pdfpagelabels=false},unknownkeysallowed]{beamer}
 \usepackage{tabls}
 \usepackage{graphicx}
 \usepackage{subcaption}
@@ -235,14 +235,15 @@ subsectionstyle=hide
         \item Results in linear transport equation with a discrete emission and scattering terms
 \item Continuous integration of time derivative
     \end{itemize}
+    \pause
 \item Drawbacks 
 \begin{itemize}
 \item Effective scattering cross section can be very large 
+    \begin{itemize}
+        \item Local acceleration methods based on discrete diffusion approxmiations
+    \end{itemize}
 \item Nonlinearities not converged
 \item Reconstruction of linear source shape in cell
-    \begin{itemize}
-        \item Local acceleration methods based on diffusion approximation
-    \end{itemize}
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -252,30 +253,59 @@ subsectionstyle=hide
     \frametitle{An alternative  High-Order Low-Order approach}
     {\small
         \begin{itemize}
-            \item[]<1-> \begin{block}{Basic Idea} Solve a fully non-linear, low-order (LO) system that can be efficiently solved,
-                with high-order (HO) correction from efficent MC simulations \end{block}
+            \item[]<1-> \begin{block}{Basic Idea} Solve a fully non-linear, low-order (LO) system,
+                that preserves a high-order (HO) solution from efficent MC simulations \end{block}
                 \vspace{-0.321in}
-              \item<1-> The LO system is formed from space-angle moments of the TRT
-                  equations, formed over a fixed finite-element (FE) spatial mesh
-              \item<2-> The LO solver resolves non-linear temperature dependence with
-                  Newton's method 
+              \item<1-> The LO system consists of space-angle moment equations, formed over a fixed finite-element (FE) spatial mesh
                 \begin{itemize}
-                    \item<2-> \colb{Lower dimensionality} in $\mu$
-                    \item<2-> Produces a linear-discontinuous (LD) FE representation
+                    \item<2-> \colb{Lower dimensionality} in angle
+              \item<2-> Non-linear temperature dependence converged with Newton's method 
+              \item<2-> \textbf{Output:} a linear-discontinuous (LD) FE representation
                         of scattering and emission source
                   %  \item Consistency terms derived directly from transport equation
                 \end{itemize}
                 \vspace{-0.1in}
             \item<3-> The HO system is a fixed-source, pure-absorber transport problem
                 \begin{itemize}
-                    \item No effective scattering events
-                    \item Solved with ECMC for efficient reduction of statisical noise 
+                    \item<4-> \colb{No effective scattering} events
+                    \item<4-> Solved with ECMC for efficient reduction of statisical noise 
+                    \item<4-> \textbf{Output:} angular consistency terms
                 \end{itemize}
         \end{itemize}
     }
 \end{frame}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%    \frametitle{High-Order Low-Order Algorithm}
+%    %\fontsize{9}{5.0}\selectfont
+%        \resizebox{0.99\linewidth}{!}{
+%    \fontsize{10}{12.0}\selectfont
+%    \begin{tikzpicture}[node distance=2cm]
+%        \node (start) [startstop] {Initialize LO system using ${I}^n$};
+%        \node (in1) [process, right of=start, xshift=2cm, text width=3.3cm]  {
+%        {LO Newton solve, fully converged}};%{LO solve:\vspace{0.041in}        $\B D(\mu^{HO})\Phi = \frac{1}{\keff}\B F\Phi$};
+%        \node (pro1) [io, below of=in1] {$T_{LO}^{n+1}(x)$, $\phi_{LO}^{n+1}(x)$};
+%        \node (dec1) [decision, below of=pro1, yshift=-0.5cm, text width=1.74cm] {Outers Complete?};
+%        \node (pro2a) [process, left of=dec1, xshift=-2.0cm] {Move to next time
+%         step};
+%        \node (srcs) [process, right of=dec1, xshift=3.0cm, text width=2.8cm] {
+%        {Construct LD sources}};
+%        \node (pro2b) [process, above of=srcs, yshift=0.5cm] {{HO ECMC Solve}};
+%        \node (cons) [process, above of=pro2b, text width=3.0cm] {{Compute consistency
+%        terms}};
+%        \draw [arrow1] (start) -- (in1);
+%        \draw [arrow] (in1) -- (pro1);
+%        \draw [arrow] (pro1) -- (dec1);
+%        \draw [arrow] (srcs) -- (pro2b);
+%        \draw [arrow] (dec1.east) -- node[anchor=south] {no} (srcs);
+%        \draw [arrow1] (dec1.west) -- node[anchor=south] {yes} (pro2a);
+%        \draw [arrow1] (pro2a) -- (start);
+%        \draw [arrow] (pro2b) -- (cons);
+%        \draw [arrow] (cons) -- (in1);
+%    \end{tikzpicture}
+%}
+%\end{frame}
 
 
 
@@ -434,20 +464,20 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
      \end{align*}
         \vspace{-0.3in}
         \end{itemize}
-        \begin{block}{FOR a fixed number of batches:}
+        \begin{block}{For each batch:}
          \begin{itemize}
         \item Residual Equation: $\displaystyle \B L \tilde 
             \epsilon^{(m)} =
             \tilde r^{(m)} = q - \B L \tilde I^{n+1,(m)}$
-        \item Compute $\tilde{\epsilon}^{(m)} = \B L^{-1} \tilde{r}^{(m)}$ with MC,
-            \colb{projecting} the solution  
-           
+        \item Compute $\tilde{\epsilon}^{(m)} = \B L^{-1} \tilde{r}^{(m)}$ with MC 
+            \begin{itemize}
+                \item Particles are allowed to stream along path $s$, $w(s)=w_0 e^{-\sigma_t s}$
+                \item Cell-wise, global representation allows for easy \colb{stratified} sampling
+            \end{itemize}
         \item Update: $\tilde I^{n+1,(m)} = \tilde I^{n+1,(m-1)} + \tilde \epsilon^{(m)}$
         \begin{itemize}
             \item If $\tilde{\epsilon}$ is reduced each batch, \colb{exponential convergence
                 achieved}
-             \item Must sufficiently reduce noise in $\epsilon$ tallies, each batch
-             \item Issues when solution cannot be represented within a cell
         \end{itemize}
     \end{itemize}
 \end{block}
@@ -490,32 +520,24 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
 \end{frame}
 
 
+
+\section{Computational Results}
+\subsection{}
+
 \begin{frame}
     \frametitle{Relevant Implementation Specifics}
     \begin{itemize}
-        \item Monte Carlo details:
-       \begin{itemize}
-        \item Particles are allowed to stream along path $s$, $w(s)=w_0 e^{-\sigma_t s}$
-    \item Cell-wise, global representation allows for easy \colb{stratified} sampling
-        \begin{itemize}
-            \item $N_{i,j} \propto{|r_i(x,\mu)|}$
-        \end{itemize}
-\end{itemize}
-    \item LO system is fully converged
-        each solve
+    \item LO Newton iterations are is fully converged each solve
     \item Difficulties in resolving the solution near the wave-front
         \begin{itemize}
             \item The LD representation for $I$ results in negativite values within a
                 cell
             \item In these results, no correction is applied to the HO solution, and the LO
-                solution uses a lumped LD closure and S$_2$ equivalent terms in these cells
+                solution uses lumped LD and S$_2$ equivalent terms in bad cells
         \end{itemize}
     \item For all results, one HO solve per time step
     \end{itemize}
 \end{frame}
-
-\section{Computational Results}
-\subsection{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -605,6 +627,20 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
 \author{}
 \date{}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{Two Material Problem, comparison in optically thin region}
+    \begin{block}{}
+        \begin{itemize}
+            \item Plot of radiation temperature after 10 time steps
+        \end{itemize}
+    \end{block}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5799\textwidth]{quick_compare.pdf}
+\end{figure}
+
+\end{frame}
 
 
 
@@ -661,9 +697,9 @@ I^{n+1}(x,\mu)\; \d \mu \d x }
     -2{\mu}_{i-1/2}^{n+1,+} \phi_{i-1/2}^{n+1,+} + \cur {\mu}_{L,i}^{n+1,+}
   \mom{\phi}_{L,i}^{n+1,+}
   +  \cur\mu_{R,i}^{n+1,+}
-  \mom{\phi}_{R,i}^{n+1,+} +  \left(\sigma_t^{n+1}+\frac{1}{c \Delta t} \right) h_i 
-  \mom{\phi}_{L,i}^{n+1,+} \\-  \frac{\sigma_s h_i}{2} \left( \mom{\phi}_{L,i}^{n+1,+} +
-  \mom\phi_{L,i}^{n+1,-}\right) = \frac{h_i}{2} \mom{\sigma_a^{n+1} a c T^{n+1,4}}_{L,i} +
+  \mom{\phi}_{R,i}^{n+1,+} +  \\ \left(\sigma_t^{n+1}+\frac{1}{c \Delta t} \right) h_i 
+  \mom{\phi}_{L,i}^{n+1,+} -  \frac{\sigma_s h_i}{2} \left( \mom{\phi}_{L,i}^{n+1,+} +
+  \mom\phi_{L,i}^{n+1,-}\right) \\ = \frac{h_i}{2} \mom{\sigma_a^{n+1} a c T^{n+1,4}}_{L,i} +
   \frac{h_i}{c\Delta t}\mom{\phi}_{L,i}^{n,+},
 \end{multline}
         \item Cell unknowns: $\mom{\phi}_{L,i}^{+}$, $\mom{\phi}_{R,i}^{+}$,
