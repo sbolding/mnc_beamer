@@ -207,18 +207,18 @@ subsectionstyle=hide
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{The gray thermal radiative transfer equations}
+\frametitle{The Grey TRT Equations}
 \begin{itemize}
-\item The 1D, frequency-integrated (grey) equations
+\item The 1D, grey equations
 \begin{align*}\label{ho_cont}
     \frac{1}{c}\pderiv{I}{t} + \mu \pderiv{I}{x} + \sigma_t I(x,\mu)
 &= \frac{1}{2} \sigma_a a c T^4,
   \\
-  C_v \pderiv{T}{t} &=  \sigma_a \phi(x) - \sigma_a a c T^4, \\
+  C_v \pderiv{T}{t} &=  \sigma_a \left(\phi(x) - a c T^4\right) \\
    \phi(x) &= \int_{-1}^1 I(x,\mu) \d \mu.
 \end{align*}
         \item Fundamental unknowns are the radiation intensity $I(x,\mu)$ and material
-            temperature $T$
+            temperature $T(x)$
         \item \pause Absorption cross section ($\sigma_a$) can be a strong function of $T$
         \item Equations are nonlinear and may be tightly coupled 
 \end{itemize}
@@ -230,18 +230,19 @@ subsectionstyle=hide
 \frametitle{The Implicit Monte Carlo Method}
 \begin{itemize}
 \item Equations often solved with Monte Carlo (MC) via the Implicit Monte Carlo (IMC) method
-\item In IMC, the material energy equation is linearized over a time step and eliminated from the system
+\item The material energy equation is linearized over a time step and eliminated from the system
     \begin{itemize}
-        \item Results in effective emission and scattering terms
-\item This linear transport equation is solved with standard MC particle transport
-    algorithms
-\item Continuous integration in time
+        \item Results in linear transport equation with a discrete emission and scattering terms
+\item Continuous integration of time derivative
     \end{itemize}
 \item Drawbacks 
 \begin{itemize}
 \item Effective scattering cross section can be very large 
 \item Nonlinearities not converged
 \item Reconstruction of linear source shape in cell
+    \begin{itemize}
+        \item Local acceleration methods based on diffusion approximation
+    \end{itemize}
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -257,7 +258,7 @@ subsectionstyle=hide
               \item<1-> The LO system, formed over a fixed spatial finite element
                   (FE) mesh, contains \colb{angular consistency terms}.
               \item<2-> The LO solver resolves non-linear temperature dependence with
-                  Newtons method
+                  Newton's method
                 \begin{itemize}
                     \item<2-> \colb{Lower dimensional} problem in angular variable
                     \item<2-> Produces a linear-discontinuous (LD) finite element  representation of sources
