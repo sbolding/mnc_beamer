@@ -111,8 +111,10 @@ centered, text width=2cm, draw=black, text=white,fill=Gray!140!blue!70!white]
 %Aggie-themed
 \pgfdeclareimage[height=0.1in]{TAMUlogo}{tamu_engineering.png}
 \logo{\raisebox{-8pt}{\pgfuseimage{TAMUlogo}}}
-\titlegraphic{\centering\begin{tabular}{lr}\includegraphics[trip=4.0in 0.0in 0.0in 0.0in,clip,height=0.18\textheight]{NEUP.jpg} &
-\includegraphics[height=0.18\textheight]{tamu_seal.png}\end{tabular}}
+\setlength\tabcolsep{0.2310in}
+\titlegraphic{\hspace{-0.2in}\centering\begin{tabular}{lcr}\includegraphics[trip=4.0in 0.0in 0.0in 0.0in,clip,height=0.18\textheight]{NEUP.jpg} &
+\includegraphics[height=0.18\textheight]{tamu_seal.png} &
+\includegraphics[height=0.18\textheight]{lanl-logo-footer.png}\end{tabular}}
 %Michigan-themed
 %\pgfdeclareimage[height=0.1in]{UMlogo}{michigan_engineering.png}
 %\logo{\raisebox{-8pt}{\pgfuseimage{UMlogo}}}
@@ -195,11 +197,11 @@ subsectionstyle=hide
 \item Temperatures on order of $10^6$ K or more
 \item Significant energy and momentum may be exchanged with material
 \end{itemize}\pause
-\item Radiative transfer simulations important in modeling: 
+\item Radiative transfer simulations important in modeling
 \begin{itemize}
 \item Material under extreme conditions
 \item Inertial confinement fusion
-\item Supernovae and other astrophysical phenomena.
+\item Supernovae and other astrophysical phenomena
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -212,14 +214,14 @@ subsectionstyle=hide
 \item The 1D, grey equations
 \begin{align*}\label{ho_cont}
     \frac{1}{c}\pderiv{I}{t} + \mu \pderiv{I}{x} + \sigma_t I(x,\mu)
-    &= \frac{1}{2} \sigma_a a c T^4(x),
+    &= \frac{1}{4\pi} \left( \sigma_a a c T^4(x) + \sigma_s \phi(x)\right),
   \\
-  C_v \pderiv{T}{t} &=  \sigma_a \left(\phi(x) - a c T^4\right) \\
-   \phi(x) &= \int_{-1}^1 I(x,\mu) \d \mu.
+  C_v \pderiv{T}{t} &=  \sigma_a \left(\phi(x) - a c T^4(x)\right) \\
+   \phi(x) &= 2\pi\int_{-1}^1 I(x,\mu) \d \mu.
 \end{align*}
         \item Fundamental unknowns are the radiation intensity $I(x,\mu)$ and material
             temperature $T(x)$
-        \item \pause Absorption cross section ($\sigma_a$) can be a strong function of $T$
+        \item Absorption cross section ($\sigma_a$) can be a strong function of $T$
         \item Equations are nonlinear and may be tightly coupled 
 \end{itemize}
 
@@ -233,17 +235,17 @@ subsectionstyle=hide
 \item The material energy equation is linearized over a time step and eliminated from the system
     \begin{itemize}
         \item Results in linear transport equation with a discrete emission and scattering terms
-\item Continuous integration of time derivative
+\item Continuous integration of transport equation in time
     \end{itemize}
     \pause
 \item Drawbacks 
 \begin{itemize}
 \item Effective scattering cross section can be very large 
     \begin{itemize}
-        \item Local acceleration methods based on discrete diffusion approxmiations
+        \item Local acceleration methods based on discrete diffusion approximations
     \end{itemize}
-\item Nonlinearities not converged
-\item Reconstruction of linear source shape in cell
+\item Linearization can cause non-physical results
+\item Reconstruction of linear source shape in cell (source tilting)
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -254,10 +256,10 @@ subsectionstyle=hide
     {\small
         \begin{itemize}
             \item[]<1-> \begin{block}{Basic Idea} Solve a fully non-linear, low-order (LO) system
-                that preserves a high-order (HO) solution from efficent MC
-                simulations, \emph{for each time step}\end{block}
+                that preserves a high-order (HO) solution from efficient MC
+            simulations. Iterations are performed \emph{each time step}\end{block}
                 \vspace{-0.321in}
-              \item<2-> The LO system consists of space-angle moment equations, formed over a fixed finite-element (FE) spatial mesh
+            \item<2-> The \textbf{LO system} consists of space-angle moment equations, formed over a fixed finite-element (FE) spatial mesh
                 \begin{itemize}
                     \item<2-> \colb{Lower dimensionality} in angle
               \item<2-> Non-linear temperature dependence converged with Newton's method 
@@ -266,10 +268,11 @@ subsectionstyle=hide
                   %  \item Consistency terms derived directly from transport equation
                 \end{itemize}
                 \vspace{-0.1in}
-            \item<3-> The HO system is a fixed-source, pure-absorber transport problem
+            \item<3-> The \textbf{HO system} is a fixed-source, pure-absorber
+                transport equation
                 \begin{itemize}
                     \item<3-> \colb{No effective scattering} events
-                    \item<3-> Solved with ECMC for efficient reduction of statisical noise 
+                    \item<3-> Solved with ECMC for efficient reduction of statistical noise 
                     \item<3-> \textbf{Output:} angular consistency terms
                 \end{itemize}
         \end{itemize}
@@ -319,11 +322,11 @@ subsectionstyle=hide
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{LO Discretization \& Space-Angle Moments}
-    {\footnotesize
     \begin{itemize}
         \item The LO system is ``S$_2$-like'' equations (similar to [Wolters 2013]),
             with a backward Euler discretization in time
-\item \colb{Linear discontinuous} (LD) FE in space for $\phi$, $T$, and $T^4(x)$   \end{itemize}
+            \pause
+\item \colb{Linear discontinuous} FE in space for $\phi$, $T$, and $T^4(x)$   \end{itemize}
     \begin{centering}
         \begin{tikzpicture}[scale=0.58, every node/.style={transform shape}]
             \draw (1.0,4.0) node[fill,circle,inner sep=0pt,minimum
@@ -354,17 +357,16 @@ subsectionstyle=hide
             \pause
     \item \colb{Half-range integrals} over $+$ and $-$ $\mu$
         \pause
-        \item \emph{\u{Examples}} of moments:
+    \item \emph{\u{Examples}} of moments:\vspace{-0.05in}
     \end{itemize}
     \begin{center}
     \begin{tabular}{cc}
         \underline{Spatial: left basis} & \underline{Angular: positive flow} \\ 
         $ {\displaystyle \mom{\cdot}_{L,i} = \frac{2}{h_i} \int_{x_\il}^{x_\ir}
         b_{L,i}(x)(\cdot) \d x \quad }$  & ${ \quad \displaystyle \phi^+(x) =
-        \int_0^1 I(x,\mu) \d \mu}$
+        2\pi\int_0^1 I(x,\mu) \d \mu}$
     \end{tabular}
     \end{center}
-}
 \end{frame}
 
 
@@ -394,8 +396,8 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
     \end{enumerate}
     \begin{itemize}
             \pause
-    \item Cell unknowns: $\mom{\phi}_{L,i}^{n+1,+}$, $\mom{\phi}_{R,i}^{n+1,+}$,
-        $\mom{\phi}_{L,i}^{n+1,-}$, $\mom{\phi}_{R,i}^{n+1,-}$, $T_{L,i}$, $T_{R,i}$
+        \item Cell unknowns are: $\mom{\phi}_{L,i}^{+}$, $\mom{\phi}_{R,i}^{+}$,
+        $\mom{\phi}_{L,i}^{-}$, $\mom{\phi}_{R,i}^{-}$, $T_{L,i}$, $T_{R,i}$
      \item Non-linear, fully discrete system, solved with approximate Newton's method
  \end{itemize}
 
@@ -417,17 +419,17 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
         \item Each batch tallies the \colb{error} in current estimate of solution
             \begin{itemize}
     \item Can reduce statistical error \colb{globally} $\propto e^{-\alpha N}$
-    \item In TRT problems, old angular intensity provides a \emph{very good} guess of new
-               solution, significantly reducing the required number of histories
+    \item In TRT problems, $I^{n}$ often provides a \emph{very good} approximation of
+        $I^{n+1}$, significantly reducing the required number of histories
 \end{itemize}
      \end{itemize}
     \begin{minipage}{0.6\linewidth}
         \vspace{-2.0in}
         \pause
      \begin{itemize}
-        \item Requires a \colr{discretized} form of the angular intensity $\tilde I(x,\mu)$
+     \item Requires a \colr{functional form} of the angular intensity $\tilde I(x,\mu)$
             \begin{itemize}
-                \item Use \u{\colb{projection}} of the solution onto a space-angle FE
+                \item Use LD \u{\colb{projection}} of the solution onto a space-angle FE
                     mesh
         \item LD FE $\tilde  I^{HO}(x,\mu)$ allows for direct computation of
             consistency terms
@@ -460,25 +462,25 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
         \item \colb{Pure absorber} transport problem because we have LD
             representation of $T^4$ from LO solution
         \begin{align*}
-            \left[\mu \pderiv{}{x} + \left(\sigma_t+\frac{1}{c\Delta t}\right)\right]I^{n+1}(x,\mu)
-            &= \frac{I^{n}}{c\Delta t} + \boxed{\frac{1}{2}\sigma_a a c T_{LO}^{n+1,4}} \\
+            \hspace{-0.2in}
+            \left[\mu \pderiv{}{x} + \left(\sigma_t^{n+1}+\frac{1}{c\Delta t}\right)\right]I^{n+1}
+            &= \frac{I^{n}}{c\Delta t} + \boxed{\frac{1}{4\pi}\left(\sigma_a^{n+1} a c
+    T_{LO}^{n+1,4}+\sigma_s\phi_{LO}^{n+1}\right)} \\
             \B L I^{n+1} &= \colb{q_{LO}}
      \end{align*}
         \vspace{-0.3in}
         \pause
         \end{itemize}
-        \begin{block}{For each batch:}
+        \begin{block}{For each batch $m$:}
          \begin{itemize}
         \item Residual Equation: $\displaystyle \B L \tilde 
             \epsilon^{(m)} =
             \tilde r^{(m)} = q - \B L \tilde I^{n+1,(m)}$
-            \pause
         \item Compute $\tilde{\epsilon}^{(m)} = \B L^{-1} \tilde{r}^{(m)}$ with MC 
             \begin{itemize}
                 \item Particles are allowed to stream along path $s$, $w(s)=w_0 e^{-\sigma_t s}$
-                \item Use cell-wise \colb{systematic} sampling for $r^{(m)}$ source
+                \item Use cell-wise {systematic} sampling for $|r^{(m)}|$ source
             \end{itemize}
-            \pause
         \item Update: $\tilde I^{n+1,(m)} = \tilde I^{n+1,(m-1)} + \tilde \epsilon^{(m)}$
         \begin{itemize}
             \item If $\tilde{\epsilon}$ is reduced each batch, \colb{exponential convergence
@@ -500,15 +502,15 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
     \begin{tikzpicture}[node distance=2cm]
         \node (start) [startstop] {Initialize LO system using $\tilde{I}^n$};
         \node (in1) [process, right of=start, xshift=2cm, text width=3.3cm]  {
-        {LO Newton solve, fully converged}};%{LO solve:\vspace{0.041in}        $\B D(\mu^{HO})\Phi = \frac{1}{\keff}\B F\Phi$};
+        {LO Newton solve, fully converged}};
         \node (pro1) [io, below of=in1] {$T_{LO}^{n+1}(x)$, $\phi_{LO}^{n+1}(x)$};
         \node (dec1) [decision, below of=pro1, yshift=-0.5cm, text width=1.74cm] {Outers Complete?};
         \node (pro2a) [process, left of=dec1, xshift=-2.0cm] {Move to next time
         step};
         \node (srcs) [process, right of=dec1, xshift=3.0cm, text width=2.8cm] {
         {Construct LD emission source}};
-        \node (pro2b) [process, above of=srcs, yshift=0.5cm] {{HO solve
-        for $\tilde I^{n+1}(x,\mu)$}};
+        \node (pro2b) [process, text width=3.0cm, above of=srcs, yshift=0.5cm] {{HO ECMC solve}
+           for $\tilde I^{n+1}(x,\mu)$};
         \node (cons) [process, above of=pro2b, text width=3.0cm] {{Compute consistency
         terms}};
         \draw [arrow1] (start) -- (in1);
@@ -530,11 +532,11 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
 \subsection{}
 
 \begin{frame}
-    \frametitle{Relevant Implementation Specifics}
+    \frametitle{Relevant Problem and Implementation Specifics }
     \begin{itemize}
     \item Difficulties in resolving the solution near the wave-front
         \begin{itemize}
-            \item The LD representation for $I$ results in negativite values within a
+            \item The LD representation of $I(x,\mu)$ results in negative values within a
                 cell
             \item In these results, no correction is applied to the HO solution, and the LO
                 solution uses lumped LD and S$_2$ equivalent terms in bad cells
@@ -543,27 +545,35 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
  \item \u{For all results}
         \begin{itemize}
     \item LO Newton iterations are is fully converged each solve
-    \item Fixed $\Delta t$ of $0.001$ sh
-    \item One HO solve per time step
+    \item Fixed $\Delta t$ of $0.001$ shakes (0.01 ns)
+    \item One HO solve per time step (predictor-corrector)
+        \begin{itemize}
+            \item \emph{each HO} solve has 3 ECMC batches
+        \end{itemize}
+    \item $\sigma_s = 0$
+
     \end{itemize}
     \end{itemize}
 \end{frame}
 
+{
+\setbeamertemplate{footline}{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Marshak Wave Test Problem}
     \centering
     \begin{block}{}
         \begin{itemize}
-                {\small
+                {\footnotesize
             \item From equilibrium, a radiation source is applied at the left
-                boundary at $t=0$. With $\sigma_a\propto T^{-3}$, energy slowly moves across the
-                system.\pause
-            \item Transient solution after 5 shakes plotted as $T_r = \sqrt[4]{\phi/ac}$, with 200 $x$ cells }
+                boundary at $t=0$. With $\sigma_a\propto T^{-3}$; energy slowly moves across the
+                system.
+            \item Transient solution after 5 shakes plotted as $T_r =
+                \sqrt[4]{\phi/ac}$, with 200~$x$ and 4~$\mu$  cells }
         \end{itemize}
     \end{block}
     \begin{figure}
-    \includegraphics[width=0.5799\textwidth]{marshak_200_compare.pdf}
+    \includegraphics[width=0.615799\textwidth]{marshak_200_compare.pdf}
     \end{figure}
 \end{frame}
 
@@ -572,13 +582,13 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
     \frametitle{Two Material Problem, Comparison of Spatial Convergence}
     \begin{block}{}
         \begin{itemize}
-            \item Problem the same as Marshak Wave, but with constant opacities and an optically thin (left) and
-                optically thick (right) region 
+            \item Same as Marshak Wave, but with constant opacities and an optically thin (left) and
+                optically thick (right) region. ECMC uses 8 $\mu$ cells
         \end{itemize}
     \end{block}
 \begin{figure}
     \centering
-    \includegraphics[width=0.5799\textwidth]{two_mat_conv.pdf}
+    \includegraphics[width=0.6755799\textwidth]{two_mat_conv.pdf}
 \end{figure}
 
 \end{frame}
@@ -588,20 +598,21 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
     \begin{block}{}
         {\small
     \begin{itemize}
-        \item One HO solve, with a \emph{fixed number of histories} per time step,
-            for two different HO solvers: a
+        \item Different HO solvers: a
             comparison of
-            \colr{ECMC} with 3 batches and standard MC (\colb{SMC}), as well as S$_2$
+            \colb{ECMC} with 3 batches and standard MC (\colr{SMC}), as well as an S$_2$
             solution
     \end{itemize}
 }
     \end{block}
     \centering
     \begin{figure}
-    \includegraphics[width=0.5799\textwidth]{two_mat_ho_compare.pdf}
+    \includegraphics[width=0.6699\textwidth]{two_mat_ho_compare.pdf}
     \centering
     \end{figure}
 \end{frame}
+
+}
 
 \section{Conclusions}
 \subsection{}
@@ -612,11 +623,12 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
     \begin{itemize}
         \item Can accurately reproduce IMC results with HOLO method
         \begin{itemize}
-            \item ECMC requires significantly less particles
+            \item ECMC requires \colb{significantly less particles} than standard MC
+            \item HO solver requires no effective scattering events
             \item LO solver determines non-linear Material temperature distribution
-            \item Linear shape within a cell mitigates teleportation error
-            \item Very efficient for diffusive problems
+            \item LD representation of $T^4$ mitigates teleportation error
         \end{itemize}
+        \pause
     \item Currently developing strategies for dealing with unresolvable solutions
     \item Next step will be to implement in 2 spatial dimensions
     \end{itemize}
@@ -654,50 +666,6 @@ I^{n+1}(x,\mu)\; \d x \d \mu}
 
 
 
-\begin{frame}
-    \frametitle{ECMC procedure}
-    {
-    \begin{block}{Algorithm}
-    \begin{enumerate}
-        \item Intialize $\tilde I^{n+1,(0)}:=\tilde I^{n}$
-        \item Using Monte Carlo, solve $\epsilon^{(m)} = \B L^{-1} \tilde r^{(m)}$
-            \begin{itemize}
-                \item Use volumetric tallies, weighted with $x$ and $\mu$ basis moments time $\psi$ to construct LD
-                    $\tilde\epsilon^{(m)}(x,\mu)$ over the current space-angle mesh
-            \end{itemize}
-        \item $\tilde \psi^{(j+1)} = \tilde \psi^{(m)} + \tilde \epsilon^{(m)}$
-        \item \textbf{IF} error stagnation:
-            \begin{itemize}
-                \item Refine mesh based on relative jump error in $\tilde \psi(x,\mu)$
-            \end{itemize}
-        \item Repeat 2-4 until $\| \tilde \epsilon \|_2 < \textsf{tol}\times
-            \|\psi\|_2$
-    \end{enumerate}
-    \end{block}
-}
-\end{frame}
-
-\begin{frame}
-    \frametitle{HOLO Algorithm}
-    {
-    \begin{block}{Algorithm}
-        \begin{enumerate}
-            \item Initialize $\mom{\mu}^{\pm}$ parameters to S$_2$
-            \item Solve LO system using power iteration
-            \item Build $q^{LD}$ for HO solver, and set $\tilde{\psi}$ to latest
-                HO estimate
-                on coarsest $x$--$\mu$ mesh
-            \item Solve $\tilde \psi(x,\mu) = \B L^{-1}q^{LO}$ using ECMC
-            \item Compute new $\mom{\mu}^\pm$ parameters using $\tilde \psi^{HO}$ over LO mesh
-            \item Repeat 2-5 until $\underline \Phi^{LO}$ is converged
-        \end{enumerate}
-
-    \begin{itemize}
-        \item Use adaptive convergence criteria
-    \end{itemize}
-    \end{block}
-}
-\end{frame}
 
 \begin{frame}
     \frametitle{LO System}
